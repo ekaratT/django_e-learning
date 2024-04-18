@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from .fields import OrderField
 
 # Create your models here.
 
@@ -35,9 +36,13 @@ class Module(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    order = OrderField(blank=True, for_fields=['course'])
 
-    def __str__(serlf):
-        return serlf.title
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.order}.{self.title}'
     
 
 class Content(models.Model):
@@ -49,10 +54,14 @@ class Content(models.Model):
     )
     object_id = models.PositiveBigIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+    order = OrderField(blank=True, for_fields=['module'])
+
+    class Meta:
+        ordering = ['order']
 
 
 class ItemBase(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_related')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_related') # this child model will be generated, like text_related...
     title = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
