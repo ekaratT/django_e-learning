@@ -1,0 +1,118 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+  }
+  
+  .logo img {
+    width: 50px; /* adjust size as needed */
+    height: auto; /* maintain aspect ratio */
+  }
+  
+  .search {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .search input {
+    padding: 5px;
+    width: 200px; /* adjust width as needed */
+  }
+  
+  .search button {
+    padding: 5px 10px;
+    background-color: #555;
+    border: none;
+    color: white;
+  }
+  
+  .logout a {
+    color: white;
+    text-decoration: none;
+  }
+  
+
+  /* Login */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form h2 {
+    margin-top: 0;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  /* Logout */
+  .logged-out-container {
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logged-out-container h1 {
+    margin-top: 0;
+  }
+  
+  .logged-out-container p {
+    margin-bottom: 20px;
+  }
+  
+  .logged-out-container a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logged-out-container a:hover {
+    background-color: #0056b3;
+  }
