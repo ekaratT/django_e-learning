@@ -21,7 +21,7 @@ def login_page(request):
     if user is not None:
         login(request, user)
         print('user is logged in...')
-        return redirect(reverse('index'))
+        return redirect(reverse('manage_course_list'))
     return render(request, 'courses/login.html')
 
 
@@ -43,23 +43,23 @@ class ManageCourseListView(ListView):
 class OwnerMixin:
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.fillter(owner=self.request.user)
+        return qs.filter(owner=self.request.user)
     
 
 class OwnerEditMixin:
     def form_valid(self, form):
-        form.instance.owner = self.request
+        form.instance.owner = self.request.user
         return super().form_valid(form)
     
 
 class OwnerCourseMixin(OwnerMixin, LoginRequiredMixin, PermissionRequiredMixin):
     model = Course
-    fields = ['subject', 'title', 'slug', 'overivew']
+    fields = ['subject', 'title', 'slug', 'overview']
     success_url = reverse_lazy('manage_course_list')
 
 
 class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
-    template_name = 'courses/manage/course/list.html'
+    template_name = 'courses/manage/course/form.html'
 
 
 class CourseCreateView(OwnerCourseEditMixin, CreateView):
