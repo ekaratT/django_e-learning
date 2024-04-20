@@ -10,4 +10,12 @@ urlpatterns = [
     path('login', views.login_page, name='login'),
     path('logout', views.logout_page, name='logout'),
     path('<pk>/module', views.CourseModuleUpdateView.as_view(), name='course_module_update'),
+    path('module/<int:module_id>/content/<model_name>/create',
+         views.ContentCreateUpdateView.as_view(),
+         name='module_content_create'
+         ),
+    path('module/<int:module_id>/content/<model_name>/<id>/update',
+         views.ContentCreateUpdateView.as_view(),
+         name='module_content_update'
+         )
 ]
