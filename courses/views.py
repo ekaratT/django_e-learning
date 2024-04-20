@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from . models import Course
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+
 # Create your views here.
 
 def index(request):
@@ -35,7 +36,7 @@ class ManageCourseListView(ListView):
     template_name = 'courses/manage/course/list.html'
     permission_required = 'courses.view_course'
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = super().get_queryset() # qs name is object_list by default.
         # Only allow courses owner to manipulate the course.
         return qs.filter(owner=self.request.user)
 
@@ -73,3 +74,5 @@ class CourseUpdateView(OwnerCourseEditMixin, UpdateView):
 class CourseDeleteView(OwnerCourseMixin, DeleteView):
     template_name = 'courses/manage/course/delete.html'
     permission_required = 'courses.delete_course'
+
+
