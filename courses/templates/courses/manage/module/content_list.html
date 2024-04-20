@@ -1,4 +1,5 @@
 {% extends 'courses/base.html' %}
+{% load course %}
 
 {% block title %}
     Module: {{module.order|add:1}} : {{module.title}}
@@ -34,8 +35,8 @@
                 {% for content in module.contents.all %}
                 <div>
                     {% with item=content.item %}
-                        <p>{{item}}</p>
-                        <a href="#">Edit</a>
+                        <p>{{item}} {{tem|model_name}}</p>
+                        <a href="{% url 'module_content_update' module.id item|model_name item.id %}">Edit</a>
                         <form action="{% url 'module_content_delete' content.id %}" method="POST">
                             {% csrf_token %}
                             <input type="submit" value="Delete">
