@@ -8,63 +8,122 @@
 {% block content %}
 
     {% with course=module.course %}
-        <h1>Course {{course.title}}</h1>
-        <div class="modules mt-2">
-            <h3>Module</h3>
-            <ul>
-                {% for m in course.modules.all %}
-                    <li>
-                        <a href="{% url 'module_content_list' m.id %}">
-                            <span>Module <span>{{module.order|add:1}}</span></span>
-                            <br>
-                            {{m.title}}
-                        </a>
-                    </li>
-        
-                {% empty %}
-                    <li>No module yet</li>
-                {% endfor %}
-            </ul>
-            <p><a href="{% url 'course_module_update' course.id %}"></a>Edit module</p>
-        </div>
-        <hr>
-        <div class="modules">
-            <h2>Module {{module.order|add:1}}:{{module.title}}</h2>
-            <h3>Module content:</h3>
-            <div class="mt-2">
-                {% for content in module.contents.all %}
-                <div>
-                    {% with item=content.item %}
-                        <p>{{item}} {{tem|model_name}}</p>
-                        <a href="{% url 'module_content_update' module.id item|model_name item.id %}">Edit</a>
-                        <form action="{% url 'module_content_delete' content.id %}" method="POST">
-                            {% csrf_token %}
-                            <input type="submit" value="Delete">
-                        </form>
-                    {% endwith %}
-                </div>
-                {% empty %}
-                    <p>This module has no content yet.</p>
-                {% endfor %}
+        <h1 class="mb-3">Course {{course.title}}</h1>
+        <div class="row row-col-2">
+            <div class="modules mt-2 col-3">
+                <h3>Module{{course.modules.all.count|pluralize}}</h3>
+                <ul id="modules" class="list-group">
+                    {% for m in course.modules.all %}
+                        <li data-id="{{m.id}}" class="list-group-item">
+                            <a href="{% url 'module_content_list' m.id %}">
+                                <span>Module <span class="order">{{m.order|add:1}}</span></span>
+                                <br>
+                                {{m.title}}
+                            </a>
+                        </li>
+            
+                    {% empty %}
+                        <li>No module yet</li>
+                    {% endfor %}
+                </ul>
+                <p><a href="{% url 'course_module_update' course.id %}">Edit module</a></p>
             </div>
-            <hr>
-            <h3>Add new content</h3>
-            <ul>
-                <li>
-                    <a href="{% url 'module_content_create' module.id 'text' %}">Text</a>
-                </li>
-                <li>
-                    <a href="{% url 'module_content_create' module.id 'image' %}">Image</a>
-                </li>
-                <li>
-                    <a href="{% url 'module_content_create' module.id 'video' %}">Video</a>
-                </li>
-                <li>
-                    <a href="{% url 'module_content_create' module.id 'file' %}">File</a>
-                </li>
-            </ul>
+            <div class="modules col">
+                <h2>Module {{module.order|add:1}}:{{module.title}}</h2>
+                <h3>Module content:</h3>
+                <div class="mt-2" id="modules-contents"> 
+                    {% for content in module.contents.all %}
+                    <div class="card p-2" data-id="{{content.id}}">
+                        {% with item=content.item %}
+                            <p>{{item}}--{{item|model_name}}</p>
+                            <a href="{% url 'module_content_update' module.id item|model_name item.id %}" class="card-link">Edit</a>
+                            <form action="{% url 'module_content_delete' content.id %}" method="POST" class="card-link">
+                                {% csrf_token %}
+                                <input type="submit" value="Delete">
+                            </form>
+                        {% endwith %}
+                    </div>
+                    {% empty %}
+                        <p>This module has no content yet.</p>
+                    {% endfor %}
+                </div>
+                <h3>Add new content</h3>
+                <ul>
+                    <li>
+                        <a href="{% url 'module_content_create' module.id 'text' %}">Text</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'module_content_create' module.id 'image' %}">Image</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'module_content_create' module.id 'video' %}">Video</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'module_content_create' module.id 'file' %}">File</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-
     {% endwith %}
 
 {% endblock content %}
+
+{% block include_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event)=>{
+            // DOM loaded
+            var options = {
+            method: 'POST',
+            mode: 'same-origin'
+        }
+        const moduleOrderUrl = '{% url "module_order" %}';
+        sortable('#modules',{
+            forcePlaceholderSize: true,
+        })[0].addEventListener('sortupdate', function(e){
+            modulesOrder = {};
+            // select all module(li) of the current course.
+            var modules = document.querySelectorAll('#modules li');
+            modules.forEach(function(module, index){
+                console.log('This is module and index: ', module.innerHTML, index)
+                // update module index
+                modulesOrder[module.dataset.id] = index;
+
+                console.log('After updated module index: ', modulesOrder)
+                // update index in HTML element
+                module.querySelector('.order').innerHTML = index + 1;
+                console.log('Updated inner HTML: ', module.innerHTML)
+                // add new order to the HTTP request options
+                options['body'] = JSON.stringify(modulesOrder);
+                console.log('options after add new order: ', options)
+                console.log('.................')
+                // send HTTP request
+                fetch(moduleOrderUrl, options)
+            });
+        });
+
+        const contentOrderUrl = '{% url "content_order" %}';
+        sortable('#modules-contents',{
+            forcePlaceholderSize: true,
+        })[0].addEventListener('sortupdate', function(e){
+            contentOrder = {};
+            // select all module(li) of the current course.
+            var contents = document.querySelectorAll('#modules-contents div');
+            contents.forEach(function(content, index){
+                // update module index
+                contentOrder[content.dataset.id] = index;
+                // add new order to the HTTP request options
+                options['body'] = JSON.stringify(contentOrder);
+                // send HTTP request
+                fetch(contentOrder, options)
+            });
+        });
+
+        })
+
+        
+    </script>
+{% endblock include_js %}
+
+
